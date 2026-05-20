@@ -1,0 +1,58 @@
+name: Trigger Pipeline
+
+on:
+  schedule:
+    - cron: '30 10 * * 1-5'
+    - cron: '40 10 * * 1-5'
+    - cron: '45 10 * * 1-5'
+    - cron: '30 12 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  ohlc_daily:
+    if: github.event.schedule == '30 10 * * 1-5' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger OHLC Daily
+        run: |
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/tradewithtechnical2025-ops/ohlc-pipeline/actions/workflows/ohlc_daily.yml/dispatches \
+            -d '{"ref":"main"}'
+
+  ohlc_today:
+    if: github.event.schedule == '40 10 * * 1-5' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger OHLC Today
+        run: |
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/tradewithtechnical2025-ops/ohlc-pipeline/actions/workflows/ohlc_today.yml/dispatches \
+            -d '{"ref":"main"}'
+
+  ep_scan:
+    if: github.event.schedule == '45 10 * * 1-5' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger EP Scan
+        run: |
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/tradewithtechnical2025-ops/ohlc-pipeline/actions/workflows/ep_scan.yml/dispatches \
+            -d '{"ref":"main"}'
+
+  fund_daily:
+    if: github.event.schedule == '30 12 * * 1-5' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Fund Daily
+        run: |
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/tradewithtechnical2025-ops/ohlc-pipeline/actions/workflows/fundamentals_daily.yml/dispatches \
+            -d '{"ref":"main"}'
